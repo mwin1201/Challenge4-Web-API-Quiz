@@ -1,0 +1,30 @@
+* {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    background-color: burlywood;
+}
+
+header {
+    display: block;
+}
+
+header h1 {
+    color: red;
+    font-size: 48px;
+}
+
+header p {
+    font-size: 30px;
+    margin-top: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.start-btn {
+    background-color: slateblue;
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 5%;
+    padding: 10px;
+}
