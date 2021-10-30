@@ -1,14 +1,14 @@
 * {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: center;
+}
+
+body {
+    display: block;
     background-color: burlywood;
 }
 
-header {
-    display: block;
-}
-
-header h1 {
+body h1 {
     color: red;
     font-size: 48px;
 }
@@ -20,8 +20,8 @@ header p {
     margin-left: 20px;
 }
 
-.start-btn {
-    background-color: slateblue;
+#start-btn {
+    background-color: blueviolet;
     color: white;
     font-size: 20px;
     border: none;
