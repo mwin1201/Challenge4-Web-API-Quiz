@@ -28,3 +28,7 @@ header p {
     border-radius: 5%;
     padding: 10px;
 }
+
+ol li {
+    text-align: center;
+}
