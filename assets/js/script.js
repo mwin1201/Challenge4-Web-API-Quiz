@@ -5,28 +5,61 @@ var headerEl = document.querySelector("#header");
 bodyEl = document.querySelector("#body");
 var timer = 60;
 timerEl.textContent = timer;
+var questionIndex = 0;
+var highscore = 0;
 
 
 var countdown = function() {
     // timer will start running and be displayed to user
     var timerCountdown = setInterval(function() {
-        timer--;
-        timerEl.textContent = timer;
-
+        // when timer hits 0 the quiz is over
         if (timer <= 0){
             // user is presented to save their name/initials to LocalStorage high scores
             clearInterval(timerCountdown);
-            displayHighScores();
+            if (highscore === 0){
+                highscore = timer;
+                displayHighScores(highscore);
+            }
         }
+        timer--;
+        timerEl.textContent = timer;
     }, 1000);
 };
 
-var displayHighScores = function() {
+var displayHighScores = function(highscore) {
+    alert("You scored: " + highscore + "!");
     bodyEl.textContent = "";
     var highScoreEl = document.createElement("div");
+    highScoreEl.className = "highscore-title";
     bodyEl.appendChild(highScoreEl);
     highScoreEl.textContent = "Quiz Highscores";
+    var scoreContainer = document.createElement("div");
+    scoreContainer.className = "highscore-container";
+    var highscoreList = document.createElement("ol");
+    // need to write localstorage values into list
 
+    nameLabel = document.createElement("label");
+    nameInput = document.createElement("input");
+    nameInput.setAttribute("type", "text");
+    nameLabel.textContent = "Enter Initials: ";
+    scoreContainer.appendChild(nameLabel);
+    scoreContainer.appendChild(nameInput);
+    highScoreEl.appendChild(scoreContainer);
+
+    nameInput.addEventListener("blur", function() {
+        var playerObj = {
+            name: nameInput.value,
+            score: highscore
+        };
+        saveScore(playerObj);
+    });
+
+};
+
+
+
+var saveScore = function(playerObj) {
+    localStorage.setItem("players", JSON.stringify(playerObj));
 };
 
 var displayQuestions = function(quizQuestion) {
@@ -60,12 +93,17 @@ var displayQuestions = function(quizQuestion) {
 
     listEl.addEventListener("click", function(event){
         checkAnswer(event.target, quizQuestion.correctAnswer);
-        for (var i = 1; i < questionArray.length; i++) {
+        while (questionIndex < questionArray.length) {
             questionEl.textContent= "";
-            alert("value of i: " + i);
-            return displayQuestions(questionArray[i]);
+            questionIndex++;
+            if (questionIndex > questionArray.length - 1){
+                break;
+            }
+            return displayQuestions(questionArray[questionIndex]);
         }
-        displayHighScores();
+        highscore = timer;
+        displayHighScores(highscore);
+        timer = 0;
     });
 };
 
@@ -119,5 +157,5 @@ startButton.addEventListener("click", function() {
     headerEl.textContent = "";
     startButton.parentElement.removeChild(startButton);
     countdown();
-    displayQuestions(questionArray[0]);
+    displayQuestions(questionArray[questionIndex]);
 });
