@@ -33,6 +33,7 @@ var displayHighScores = function() {
     highscoreTitle.textContent = "Quiz Highscores";
     var scoreContainer = document.createElement("div");
     var highscoreList = document.createElement("ol");
+    highscoreList.className = "score-list";
     var scoreList = loadHighScores();
     if (!scoreList) {
         var noScore = document.createElement("li");
@@ -44,6 +45,7 @@ var displayHighScores = function() {
     else {
         for (var i = 0; i < scoreList.length; i++) {
             var scoreEl = document.createElement("li");
+            scoreEl.className = "score-item";
             scoreEl.textContent = scoreList[i].name + ":" + scoreList[i].score + " points";
             highscoreList.appendChild(scoreEl);
             scoreContainer.appendChild(highscoreList);
@@ -74,9 +76,9 @@ var gameOver = function(highscore) {
         };
         saveScore(playerObj);
         congratsEl.className = "invisible";
-        nameLabel.className = "invisible";
-        nameInput.className = "invisible";
-        saveBtn.className = "invisible";
+        headerEl.removeChild(nameLabel);
+        headerEl.removeChild(nameInput);
+        headerEl.removeChild(saveBtn);
         displayHighScores();
     });
 };

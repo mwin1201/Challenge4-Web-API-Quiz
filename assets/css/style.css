@@ -1,11 +1,11 @@
 * {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    text-align: center;
 }
 
 body {
     display: block;
     background-color: burlywood;
+    text-align: center;
 }
 
 body h1 {
@@ -29,9 +29,23 @@ header p {
     padding: 10px;
 }
 
-ol li {
+#question-answers-list {
     text-align: center;
     list-style-type: none;
+}
+
+#question-answers-list li button {
+    background-color: gold;
+    border: none;
+    color: black;
+    padding: 10px;
+    margin: 5px 0px;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+#question-answers-list li button:hover {
+    background-color: red;
 }
 
 .visible {
@@ -40,4 +54,18 @@ ol li {
 
 .invisible {
     visibility: hidden;
+}
+
+.score-list {
+    text-align: center;
+    background-color: silver;
+    color: black;
+    border: 5px solid purple;
+    margin: 0px 50px;
+}
+
+.score-item {
+    margin: 15px 0px;
+    background-color: gold;
+    font-size: 26px;
 }
