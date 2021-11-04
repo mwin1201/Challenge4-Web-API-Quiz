@@ -2,7 +2,7 @@ var startButton = document.querySelector("#start-btn");
 var questionContainerEl = document.querySelector("#question-container");
 var timerEl = document.querySelector("#timer");
 var headerEl = document.querySelector("#header");
-bodyEl = document.querySelector("#body");
+var bodyEl = document.querySelector("#body");
 var listEl = document.querySelector("#question-answers-list");
 var questionEl = document.querySelector("#question-element");
 var timer = 60;
@@ -20,7 +20,7 @@ var countdown = function() {
             clearInterval(timerCountdown);
             if (highscore === 0){
                 highscore = timer;
-                displayHighScores(highscore);
+                gameOver(highscore);
             }
         }
         timer--;
@@ -28,56 +28,80 @@ var countdown = function() {
     }, 1000);
 };
 
-var displayHighScores = function(highscore) {
-    alert("You scored: " + highscore + "!");
-    bodyEl.textContent = "";
-    var highScoreEl = document.createElement("div");
-    highScoreEl.className = "highscore-title";
-    bodyEl.appendChild(highScoreEl);
-    highScoreEl.textContent = "Quiz Highscores";
+var displayHighScores = function() {
+    var highscoreTitle = document.querySelector("#title");
+    highscoreTitle.textContent = "Quiz Highscores";
     var scoreContainer = document.createElement("div");
-    scoreContainer.className = "highscore-container";
     var highscoreList = document.createElement("ol");
-    // need to write localstorage values into list
-    for (var i = 0; i < highscoresArr.length; i++) {
-        listEl = document.createElement("li");
-        var listObj = loadHighScores(i);
-        listEl.textContent = listObj[i].name + ": " + listObj[i].score;
-        highscoreList.appendChild(listEl);
+    var scoreList = loadHighScores();
+    if (!scoreList) {
+        var noScore = document.createElement("li");
+        noScore.textContent = "There are no high scores to display.";
+        highscoreList.appendChild(noScore);
         scoreContainer.appendChild(highscoreList);
     }
-    nameLabel = document.createElement("label");
-    nameInput = document.createElement("input");
+    // need to write localstorage values into list
+    else {
+        for (var i = 0; i < scoreList.length; i++) {
+            var scoreEl = document.createElement("li");
+            scoreEl.textContent = scoreList[i].name + ":" + scoreList[i].score + " points";
+            highscoreList.appendChild(scoreEl);
+            scoreContainer.appendChild(highscoreList);
+        }
+    }
+    headerEl.appendChild(scoreContainer);
+};
+
+var gameOver = function(highscore) {
+    questionContainerEl.innerHTML = "";
+    headerEl.className = "visible";
+    var congratsEl = document.querySelector("#description");
+    congratsEl.textContent = "You scored: " + highscore + " points! Enter your initials and click 'Save' to record your highscore. ";
+    var nameLabel = document.createElement("label");
+    var nameInput = document.createElement("input");
+    var saveBtn = document.createElement("button");
     nameInput.setAttribute("type", "text");
     nameLabel.textContent = "Enter Initials: ";
-    scoreContainer.appendChild(nameLabel);
-    scoreContainer.appendChild(nameInput);
-    highScoreEl.appendChild(scoreContainer);
+    saveBtn.textContent = "Save!";
+    headerEl.appendChild(nameLabel);
+    headerEl.appendChild(nameInput);
+    headerEl.appendChild(saveBtn);
 
-    nameInput.addEventListener("blur", function() {
+    saveBtn.addEventListener("click", function() {
         var playerObj = {
             name: nameInput.value,
             score: highscore
         };
         saveScore(playerObj);
+        congratsEl.className = "invisible";
+        nameLabel.className = "invisible";
+        nameInput.className = "invisible";
+        saveBtn.className = "invisible";
+        displayHighScores();
     });
-
 };
 
 var loadHighScores = function(index) {
     var scores = localStorage.getItem("Quiz-Game");
     if (!scores) {
-        return false;
+        return [];
     }
     scores = JSON.parse(scores);
-    return scores[index];
+    return scores;
 };
 
 var saveScore = function(playerObj) {
     highscoresArr.push(playerObj);
     var scores = localStorage.getItem("Quiz-Game");
-    scores = JSON.parse(scores);
-    highscoresArr.push(scores);
+    if (scores === null) {
+        scores = [];
+    }
+    else {
+        scores = JSON.parse(scores);
+        for (var i = 0; i < scores.length; i++) {
+            highscoresArr.push(scores[i]);
+        }
+    }
     localStorage.setItem("Quiz-Game", JSON.stringify(highscoresArr));
 };
 
@@ -122,12 +146,12 @@ var displayQuestions = function(quizQuestion) {
 var checkAnswer = function(userGuess, answer) {
     userGuess = userGuess.innerHTML;
     if (userGuess !== answer) {
-        alert("Wrong!");
+        incorrectAnswer();
         timer = timer - 10;
         timerEl.textContent = timer;
     }
     else {
-        alert("Correct!");
+        correctAnswer();
     }
 };
 
@@ -141,9 +165,23 @@ var removeQuestion = function() {
 // questions will appear with multiple choices
 
 // when user selects correct answer, a brief "hooray" message will appear
-
+var correctAnswer = function () {
+    var correctEl = document.createElement("p");
+    correctEl.textContent = "Correct!";
+    questionContainerEl.appendChild(correctEl);
+    setTimeout(function() {
+        correctEl.textContent = "";
+    }, 500);
+};
 // when user selects incorrect answer, a brief "not correct" message will appear
-
+var incorrectAnswer = function () {
+    var incorrectEl = document.createElement("p");
+    incorrectEl.textContent = "Incorrect!";
+    questionContainerEl.appendChild(incorrectEl);
+    setTimeout(function() {
+        incorrectEl.textContent = "";
+    }, 500);
+};
 // when all the questions are answered OR the timer expires the time remaining becomes the score
 
 // array of quiz question objects
@@ -198,7 +236,6 @@ var questionArray = [
 
 // once user clicks start button the quiz will start
 startButton.addEventListener("click", function() {
-    headerEl.textContent = "";
     startButton.parentElement.removeChild(startButton);
     countdown();
     displayQuestions(questionArray[questionIndex]);
@@ -215,6 +252,6 @@ listEl.addEventListener("click", function(event){
         return displayQuestions(questionArray[questionIndex]);
     }
     highscore = timer;
-    displayHighScores(highscore);
+    gameOver(highscore);
     timer = 0;
 });

@@ -33,3 +33,11 @@ ol li {
     text-align: center;
     list-style-type: none;
 }
+
+.visible {
+    visibility: visible;
+}
+
+.invisible {
+    visibility: hidden;
+}
