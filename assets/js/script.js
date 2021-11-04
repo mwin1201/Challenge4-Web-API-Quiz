@@ -1,3 +1,4 @@
+// global variables to be used in later functions
 var startButton = document.querySelector("#start-btn");
 var questionContainerEl = document.querySelector("#question-container");
 var timerEl = document.querySelector("#timer");
@@ -7,12 +8,14 @@ var listEl = document.querySelector("#question-answers-list");
 var questionEl = document.querySelector("#question-element");
 var timer = 60;
 timerEl.textContent = timer;
+// index to move through the array of question objects
 var questionIndex = 0;
 var highscore = 0;
 var highscoresArr = [];
 
+// countdown function for the timer
 var countdown = function() {
-    // timer will start running and be displayed to user
+    // timer will start running and countdown 1 second every second
     var timerCountdown = setInterval(function() {
         // when timer hits 0 the quiz is over
         if (timer <= 0){
@@ -28,6 +31,8 @@ var countdown = function() {
     }, 1000);
 };
 
+// function to display the saved highscores from localstorage
+// all saved scores will be displayed
 var displayHighScores = function() {
     var highscoreTitle = document.querySelector("#title");
     highscoreTitle.textContent = "Quiz Highscores";
@@ -54,11 +59,14 @@ var displayHighScores = function() {
     headerEl.appendChild(scoreContainer);
 };
 
+// end of game function that gets called when all questions are answered or the timer runs out
+// user is presented with field to save their score to localstorage
 var gameOver = function(highscore) {
     questionContainerEl.innerHTML = "";
     headerEl.className = "visible";
+    var correctCount = countCorrect();
     var congratsEl = document.querySelector("#description");
-    congratsEl.textContent = "You scored: " + highscore + " points! Enter your initials and click 'Save' to record your highscore. ";
+    congratsEl.innerHTML = "You scored <span> " + highscore + " </span> points and got <span>" + correctCount + " </span> questions correct! Enter your initials and click 'Save' to record your highscore. ";
     var nameLabel = document.createElement("label");
     var nameInput = document.createElement("input");
     var saveBtn = document.createElement("button");
@@ -69,6 +77,7 @@ var gameOver = function(highscore) {
     headerEl.appendChild(nameInput);
     headerEl.appendChild(saveBtn);
 
+    // event listener on save button to save score
     saveBtn.addEventListener("click", function() {
         var playerObj = {
             name: nameInput.value,
@@ -83,6 +92,19 @@ var gameOver = function(highscore) {
     });
 };
 
+// count correct answers
+var countCorrect = function() {
+    var correctCount = 0;
+    for (var i = 0; i < questionArray.length; i++) {
+        if (questionArray[i].answerStatus === "correct") {
+            correctCount++;
+        }
+    }
+    return correctCount;
+}
+
+
+// function to get the high scores from localstorage
 var loadHighScores = function(index) {
     var scores = localStorage.getItem("Quiz-Game");
     if (!scores) {
@@ -92,6 +114,7 @@ var loadHighScores = function(index) {
     return scores;
 };
 
+// function to save player score in object and set in localstorage
 var saveScore = function(playerObj) {
     highscoresArr.push(playerObj);
     var scores = localStorage.getItem("Quiz-Game");
@@ -144,16 +167,18 @@ var displayQuestions = function(quizQuestion) {
 };
 
 
-
+// function that checks user answer for each question
 var checkAnswer = function(userGuess, answer) {
     userGuess = userGuess.innerHTML;
     if (userGuess !== answer) {
         incorrectAnswer();
+        questionArray[questionIndex].answerStatus = "incorrect";
         timer = timer - 10;
         timerEl.textContent = timer;
     }
     else {
         correctAnswer();
+        questionArray[questionIndex].answerStatus = "correct";
     }
 };
 
@@ -164,9 +189,8 @@ var removeQuestion = function() {
     }
     questionEl.removeChild(listEl);
 };
-// questions will appear with multiple choices
 
-// when user selects correct answer, a brief "hooray" message will appear
+// when user selects correct answer, a brief "correct!" message will appear
 var correctAnswer = function () {
     var correctEl = document.createElement("p");
     correctEl.textContent = "Correct!";
@@ -175,7 +199,7 @@ var correctAnswer = function () {
         correctEl.textContent = "";
     }, 500);
 };
-// when user selects incorrect answer, a brief "not correct" message will appear
+// when user selects incorrect answer, a brief "incorrect!" message will appear
 var incorrectAnswer = function () {
     var incorrectEl = document.createElement("p");
     incorrectEl.textContent = "Incorrect!";
@@ -184,7 +208,6 @@ var incorrectAnswer = function () {
         incorrectEl.textContent = "";
     }, 500);
 };
-// when all the questions are answered OR the timer expires the time remaining becomes the score
 
 // array of quiz question objects
 var questionArray = [
@@ -243,6 +266,7 @@ startButton.addEventListener("click", function() {
     displayQuestions(questionArray[questionIndex]);
 });
 
+// event listener on the multiple choice answer buttons
 listEl.addEventListener("click", function(event){
     checkAnswer(event.target, questionArray[questionIndex].correctAnswer);
     while (questionIndex < questionArray.length) {

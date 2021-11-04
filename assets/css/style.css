@@ -69,3 +69,8 @@ header p {
     background-color: gold;
     font-size: 26px;
 }
+
+span {
+    font-size: 24px;
+    color: red;
+}
